@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jofranpduran.dogshelter.domain.model.Dog
 import com.jofranpduran.dogshelter.domain.model.Gender
+import com.jofranpduran.dogshelter.ui.common.rememberDogAgeDisplay
 import java.time.LocalDate
 
 
@@ -20,6 +21,7 @@ import java.time.LocalDate
 fun DogListItem(
     modifier: Modifier = Modifier, dog: Dog
 ) {
+    val ageString = rememberDogAgeDisplay(dog)
 
     ElevatedCard(
         modifier = modifier
@@ -41,6 +43,11 @@ fun DogListItem(
                     text = dog.breed,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = ageString,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 

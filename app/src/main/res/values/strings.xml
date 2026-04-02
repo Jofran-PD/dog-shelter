@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">Dog Shelter</string>
+
+    <!-- Age related individual components -->
+    <plurals name="age_years">
+        <item quantity="one">%d year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
+    <plurals name="age_months">
+        <item quantity="one">%d month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
+
+    <!-- Age related formatting templates -->
+    <string name="age_combined">%1$s and %2$s old</string>
+    <string name="age_single">%1$s old</string>
+    <string name="age_newborn">&lt; 1 month old</string>
+
+    <string name="male">MALE</string>
+    <string name="female">FEMALE</string>
 </resources>
