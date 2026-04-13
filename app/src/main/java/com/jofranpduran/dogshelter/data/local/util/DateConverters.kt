@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class DateConverters {
-    private val formatter = DateTimeFormatter.ISO_DATE_TIME
+    private val formatter = DateTimeFormatter.ISO_LOCAL_DATE
 
     @TypeConverter
     fun fromDate(date: LocalDate): String {
