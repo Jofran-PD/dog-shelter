@@ -29,7 +29,7 @@ fun DogListItem(
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp, horizontal = 16.dp)
+            .padding(vertical = 8.dp, horizontal = 16.dp)
     ) {
         Box(
             modifier = Modifier.fillMaxWidth()
