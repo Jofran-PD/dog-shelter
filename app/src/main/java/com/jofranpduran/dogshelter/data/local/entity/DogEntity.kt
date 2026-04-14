@@ -8,7 +8,8 @@ import java.time.LocalDate
 
 @Entity(tableName = "dog")
 data class DogEntity(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) 
+    val id: Int = 0,
     val name: String,
     val breed: String,
     val weight: Int,
