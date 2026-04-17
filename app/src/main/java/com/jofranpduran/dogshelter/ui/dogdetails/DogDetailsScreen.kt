@@ -17,6 +17,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jofranpduran.dogshelter.domain.model.Dog
+import com.jofranpduran.dogshelter.domain.model.Gender
+import java.time.LocalDate
 
 @Composable
 fun DogDetailsScreen(
@@ -46,7 +49,7 @@ fun DogDetailsScreen(
                     )
 
                 is DogDetailsUiState.Success ->
-                    DogDetailsScreenContent(dogId = state.dogId)
+                    DogDetailsScreenContent(dog = state.dog)
 
                 DogDetailsUiState.NotFound ->
                     Text(
@@ -61,13 +64,13 @@ fun DogDetailsScreen(
 @Composable
 fun DogDetailsScreenContent(
     modifier: Modifier = Modifier,
-    dogId: Int
+    dog: Dog
 ) {
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp)
     ) {
         Text(
-            text = "$dogId",
+            text = dog.name,
             style = MaterialTheme.typography.displayLarge,
             fontWeight = FontWeight.W500
         )
@@ -79,6 +82,14 @@ fun DogDetailsScreenContent(
 @Composable
 fun DogDetailsScreenContentPreview() {
     DogDetailsScreenContent(
-        dogId = 56
+        dog = Dog(
+            id = 1,
+            name = "Rex",
+            breed = "German Shepherd",
+            weight = 30,
+            gender = Gender.MALE,
+            birthDate = LocalDate.now().minusYears(2),
+            notes = "Friendly and energetic"
+        )
     )
 }

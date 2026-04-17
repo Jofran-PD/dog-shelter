@@ -16,4 +16,8 @@ class PetsRepositoryImpl @Inject constructor(
             list.map { it.asDomainModel() }
         }
     }
+
+    override fun getDogById(id: Int): Flow<Dog?> {
+        return dogDao.getDogByID(id).map { it?.asDomainModel() }
+    }
 }

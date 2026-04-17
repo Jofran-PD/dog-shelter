@@ -22,4 +22,7 @@ interface DogDao {
 
     @Delete
     suspend fun deleteDog(dog: DogEntity): Int
+
+    @Query("SELECT * FROM dog WHERE id = :id")
+    fun getDogByID(id: Int) : Flow<DogEntity?>
 }

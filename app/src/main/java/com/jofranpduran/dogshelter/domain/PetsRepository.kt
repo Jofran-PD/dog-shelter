@@ -5,4 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface PetsRepository {
     fun getAllDogs() : Flow<List<Dog>>
+    fun getDogById(id: Int): Flow<Dog?>
 }
