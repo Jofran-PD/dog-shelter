@@ -7,10 +7,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.jofranpduran.dogshelter.ui.adoptablelist.AdoptableListScreen
+import com.jofranpduran.dogshelter.ui.dogdetails.DogDetailsScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
 object AdoptableListRoute
+
+@Serializable
+data class DogDetailsRoute(val dogId: Int)
 
 @Composable
 fun Navigation(
@@ -24,7 +28,15 @@ fun Navigation(
         startDestination = AdoptableListRoute
     ) {
         composable<AdoptableListRoute> {
-            AdoptableListScreen()
+            AdoptableListScreen(
+                onItemClick = { dogId ->
+                    navController.navigate(DogDetailsRoute(dogId))
+                }
+            )
+        }
+
+        composable<DogDetailsRoute> {
+            DogDetailsScreen()
         }
     }
 }

@@ -22,14 +22,17 @@ import java.time.LocalDate
 
 @Composable
 fun DogListItem(
-    modifier: Modifier = Modifier, dog: Dog
+    modifier: Modifier = Modifier,
+    dog: Dog,
+    onItemClick: (Int) -> Unit
 ) {
     val ageString = rememberDogAgeDisplay(dog)
 
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp)
+            .padding(vertical = 8.dp, horizontal = 16.dp),
+        onClick = { onItemClick(dog.id) }
     ) {
         Box(
             modifier = Modifier.fillMaxWidth()
@@ -75,6 +78,7 @@ private fun DogListItemPreview() {
             gender = Gender.FEMALE,
             birthDate = LocalDate.now().minusMonths(56),
             notes = "Very friendly"
-        )
+        ),
+        onItemClick = {}
     )
 }

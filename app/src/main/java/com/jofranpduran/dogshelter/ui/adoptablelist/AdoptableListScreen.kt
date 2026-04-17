@@ -24,7 +24,8 @@ import java.time.LocalDate
 @Composable
 fun AdoptableListScreen(
     modifier: Modifier = Modifier,
-    viewModel: AdoptableListViewModel = hiltViewModel()
+    viewModel: AdoptableListViewModel = hiltViewModel(),
+    onItemClick: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -58,7 +59,8 @@ fun AdoptableListScreen(
                         )
                     } else {
                         AdoptableListContent(
-                            dogs = state.dogs
+                            dogs = state.dogs,
+                            onItemClick = onItemClick
                         )
                     }
                 }
@@ -70,14 +72,18 @@ fun AdoptableListScreen(
 @Composable
 fun AdoptableListContent(
     modifier: Modifier = Modifier,
-    dogs: List<Dog>
+    dogs: List<Dog>,
+    onItemClick: (Int) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
     ) {
         items(dogs) { dog ->
-            DogListItem(dog = dog)
+            DogListItem(
+                dog = dog,
+                onItemClick = onItemClick
+            )
         }
     }
 }
@@ -114,5 +120,5 @@ private fun AdoptableListContentPreview() {
             notes = "Great sense of smell"
         )
     )
-    AdoptableListContent(dogs = dogs)
+    AdoptableListContent(dogs = dogs, onItemClick = {})
 }
