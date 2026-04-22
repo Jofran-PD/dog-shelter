@@ -2,6 +2,7 @@ package com.jofranpduran.dogshelter.data
 
 import com.jofranpduran.dogshelter.data.local.dao.DogDao
 import com.jofranpduran.dogshelter.data.mapper.asDomainModel
+import com.jofranpduran.dogshelter.data.mapper.toEntity
 import com.jofranpduran.dogshelter.domain.PetsRepository
 import com.jofranpduran.dogshelter.domain.model.Dog
 import kotlinx.coroutines.flow.Flow
@@ -19,5 +20,9 @@ class PetsRepositoryImpl @Inject constructor(
 
     override fun getDogById(id: Int): Flow<Dog?> {
         return dogDao.getDogByID(id).map { it?.asDomainModel() }
+    }
+
+    override suspend fun insertDog(dog: Dog): Long {
+        return dogDao.insertDog(dog.toEntity())
     }
 }
