@@ -2,9 +2,7 @@ package com.jofranpduran.dogshelter.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -33,21 +31,13 @@ fun Navigation(
         navController = navController,
         startDestination = AdoptableListRoute
     ) {
-        composable<AdoptableListRoute> { backStackEntry ->
-            val dogAddedSuccess by backStackEntry.savedStateHandle
-                .getStateFlow<Boolean?>("dog_added_success", null)
-                .collectAsStateWithLifecycle()
-
+        composable<AdoptableListRoute> {
             AdoptableListScreen(
                 onItemClick = { dogId ->
                     navController.navigate(DogDetailsRoute(dogId))
                 },
                 onAddDogClick = {
                     navController.navigate(AddDogRoute)
-                },
-                dogAddedSuccess = dogAddedSuccess,
-                onConsumeDogAddedSuccess = {
-                    backStackEntry.savedStateHandle.remove<Boolean>("dog_added_success")
                 }
             )
         }

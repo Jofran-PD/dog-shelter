@@ -1,5 +1,6 @@
 package com.jofranpduran.dogshelter.ui.adoptablelist
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jofranpduran.dogshelter.domain.PetsRepository
@@ -20,8 +21,16 @@ sealed interface AdoptableListUiState {
 
 @HiltViewModel
 class AdoptableListViewModel @Inject constructor(
-    repository: PetsRepository
+    repository: PetsRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    val dogAddedSuccess: StateFlow<Boolean?> = savedStateHandle.getStateFlow("dog_added_success", null)
+
+    fun onConsumeDogAddedSuccess() {
+        savedStateHandle["dog_added_success"] = null
+    }
+
     val uiState: StateFlow<AdoptableListUiState> = repository.getAllDogs()
         .map<List<Dog>, AdoptableListUiState> { dogs ->
             AdoptableListUiState.Success(dogs)

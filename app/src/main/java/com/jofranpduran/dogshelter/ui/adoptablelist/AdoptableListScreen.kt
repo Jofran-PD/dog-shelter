@@ -34,17 +34,16 @@ fun AdoptableListScreen(
     modifier: Modifier = Modifier,
     viewModel: AdoptableListViewModel = hiltViewModel(),
     onItemClick: (Int) -> Unit,
-    onAddDogClick: () -> Unit,
-    dogAddedSuccess: Boolean? = null,
-    onConsumeDogAddedSuccess: () -> Unit = {}
+    onAddDogClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val dogAddedSuccess by viewModel.dogAddedSuccess.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(dogAddedSuccess) {
         if (dogAddedSuccess == true) {
             snackbarHostState.showSnackbar("Dog added successfully!")
-            onConsumeDogAddedSuccess()
+            viewModel.onConsumeDogAddedSuccess()
         }
     }
 
