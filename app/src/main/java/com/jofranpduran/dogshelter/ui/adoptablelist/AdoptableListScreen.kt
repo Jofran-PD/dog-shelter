@@ -6,11 +6,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,12 +33,29 @@ import java.time.LocalDate
 fun AdoptableListScreen(
     modifier: Modifier = Modifier,
     viewModel: AdoptableListViewModel = hiltViewModel(),
-    onItemClick: (Int) -> Unit
+    onItemClick: (Int) -> Unit,
+    onAddDogClick: () -> Unit,
+    dogAddedSuccess: Boolean? = null,
+    onConsumeDogAddedSuccess: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(dogAddedSuccess) {
+        if (dogAddedSuccess == true) {
+            snackbarHostState.showSnackbar("Dog added successfully!")
+            onConsumeDogAddedSuccess()
+        }
+    }
 
     Scaffold(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onAddDogClick) {
+                Icon(Icons.Default.Add, contentDescription = "Add Dog")
+            }
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier
