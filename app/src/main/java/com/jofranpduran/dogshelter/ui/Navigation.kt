@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.jofranpduran.dogshelter.ui.adddog.AddDogScreen
 import com.jofranpduran.dogshelter.ui.adoptablelist.AdoptableListScreen
+import com.jofranpduran.dogshelter.ui.adoptablelist.AdoptableListViewModel
 import com.jofranpduran.dogshelter.ui.dogdetails.DogDetailsScreen
 import kotlinx.serialization.Serializable
 
@@ -48,8 +49,8 @@ fun Navigation(
                 onDogAdded = {
                     navController.previousBackStackEntry
                         ?.savedStateHandle
-                        ?.set("dog_added_success", true)
-                    navController.navigateUp()
+                        ?.set(AdoptableListViewModel.KEY_DOG_ADDED, true)
+                    navController.popBackStack()
                 }
             )
         }

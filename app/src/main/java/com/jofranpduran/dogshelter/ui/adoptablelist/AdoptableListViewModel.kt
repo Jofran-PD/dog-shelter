@@ -25,10 +25,14 @@ class AdoptableListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val dogAddedSuccess: StateFlow<Boolean?> = savedStateHandle.getStateFlow("dog_added_success", null)
+    companion object{
+        const val KEY_DOG_ADDED = "dog_added_success"
+    }
+
+    val dogAddedSuccess: StateFlow<Boolean?> = savedStateHandle.getStateFlow(KEY_DOG_ADDED, null)
 
     fun onConsumeDogAddedSuccess() {
-        savedStateHandle["dog_added_success"] = null
+        savedStateHandle[KEY_DOG_ADDED] = null
     }
 
     val uiState: StateFlow<AdoptableListUiState> = repository.getAllDogs()
