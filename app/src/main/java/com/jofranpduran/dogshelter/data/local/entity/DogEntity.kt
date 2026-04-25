@@ -16,5 +16,7 @@ data class DogEntity(
     val gender: Gender,
     @ColumnInfo(name = "birth_date")
     val birthDate: LocalDate,
-    val notes: String
+    val notes: String,
+    @ColumnInfo(name = "image_uri")
+    val imageUri: String = ""
 )

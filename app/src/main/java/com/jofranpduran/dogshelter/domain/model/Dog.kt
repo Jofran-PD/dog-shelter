@@ -10,7 +10,8 @@ data class Dog(
     val weight: Int,
     val gender: Gender,
     val birthDate: LocalDate,
-    val notes: String
+    val notes: String,
+    val imageUri: String = ""
 ) {
     private val period: Period
         get() = Period.between(birthDate, LocalDate.now())

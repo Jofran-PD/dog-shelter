@@ -11,7 +11,8 @@ fun DogEntity.asDomainModel(): Dog {
         weight = weight,
         gender = gender,
         birthDate = birthDate,
-        notes = notes
+        notes = notes,
+        imageUri = imageUri
     )
 }
 
@@ -23,6 +24,7 @@ fun Dog.toEntity(): DogEntity {
         weight = weight,
         gender = gender,
         birthDate = birthDate,
-        notes = notes
+        notes = notes,
+        imageUri = imageUri
     )
 }
