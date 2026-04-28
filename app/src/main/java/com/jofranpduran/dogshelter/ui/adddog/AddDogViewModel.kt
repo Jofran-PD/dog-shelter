@@ -21,6 +21,7 @@ data class AddDogUiState(
     val gender: Gender = Gender.MALE,
     val birthDate: LocalDate = LocalDate.now(),
     val notes: String = "",
+    val imageUri: String = "",
     val isSaving: Boolean = false,
     val isSaved: Boolean = false,
     val errorMessage: String? = null

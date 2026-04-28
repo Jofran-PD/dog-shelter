@@ -1,7 +1,17 @@
 package com.jofranpduran.dogshelter.ui.adddog
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -39,10 +50,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jofranpduran.dogshelter.domain.model.Gender
@@ -53,6 +68,13 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+
+fun Context.hasCameraPermission() =
+    PackageManager.PERMISSION_GRANTED ==
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            )
 
 @Composable
 fun AddDogScreen(
@@ -69,6 +91,35 @@ fun AddDogScreen(
         }
     }
 
+    val context = LocalContext.current
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Permission accepted: Navigate to camera or open CameraController
+            Log.i("CAMERA PERMISSION", "GRANTED")
+        } else {
+            // Permission denied: Show a toast or a snackbar explaining why it's needed
+            Log.i("CAMERA PERMISSION", "NOT GRANTED")
+        }
+    }
+
+    val onAddPhotoClick = remember(context, cameraPermissionLauncher) {
+        {
+            if (context.hasCameraPermission()) {
+                // Permission is already granted, open camera logic
+                // TODO Open camera logic
+                Log.i("ADD DOG SCREEN", "OPENING CAMERA...")
+            } else {
+                // Permission has not been granted, request it
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+            Unit
+        }
+    }
+
+
     AddDogContent(
         uiState = uiState,
         onNavigateUp = onNavigateUp,
@@ -79,6 +130,7 @@ fun AddDogScreen(
         onBirthDateChange = viewModel::onBirthDateChange,
         onNotesChange = viewModel::onNotesChange,
         onSaveClick = viewModel::saveDog,
+        onAddPhotoClick = onAddPhotoClick,
         modifier = modifier
     )
 }
@@ -94,6 +146,7 @@ fun AddDogContent(
     onGenderChange: (Gender) -> Unit,
     onBirthDateChange: (LocalDate) -> Unit,
     onNotesChange: (String) -> Unit,
+    onAddPhotoClick: () -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -125,6 +178,13 @@ fun AddDogContent(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
+            DogPhotoPicker(
+                imageUri = uiState.imageUri,
+                onClick = onAddPhotoClick
+            )
+
+            Spacer(modifier = Modifier.size(16.dp))
+
             AddDogTextField(
                 label = "Name",
                 value = uiState.name,
@@ -211,6 +271,34 @@ fun SaveDogButton(
             )
         } else {
             Icon(Icons.Default.Check, contentDescription = "Save")
+        }
+    }
+}
+
+@Composable
+fun DogPhotoPicker(
+    modifier: Modifier = Modifier,
+    imageUri: String?,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        if (imageUri.isNullOrEmpty()) {
+            Icon(
+                modifier = Modifier.size(48.dp),
+                imageVector = Icons.Default.PhotoCamera,
+                contentDescription = "Take a photo",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            // Show image from imageUri
         }
     }
 }
@@ -365,8 +453,6 @@ fun DogDatePickerField(
     }
 }
 
-
-
 @Preview(showBackground = true)
 @Composable
 fun AddDogScreenPreview() {
@@ -387,6 +473,7 @@ fun AddDogScreenPreview() {
             onGenderChange = {},
             onBirthDateChange = {},
             onNotesChange = {},
+            onAddPhotoClick = {},
             onSaveClick = {}
         )
     }
