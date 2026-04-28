@@ -16,9 +16,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun dogDao(): DogDao
 
     companion object {
-        val MIGRATION_1_2 = object : Migration(1, 3) {
+        val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("ALTER TABLE dog ADD COLUMN image_uri TEXT")
+                db.execSQL("ALTER TABLE dog ADD COLUMN image_uri TEXT NOT NULL DEFAULT''")
             }
         }
     }
