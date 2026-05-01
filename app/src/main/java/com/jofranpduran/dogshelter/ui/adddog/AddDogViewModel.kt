@@ -62,6 +62,10 @@ class AddDogViewModel @Inject constructor(
         _uiState.update { it.copy(notes = notes) }
     }
 
+    fun onDogPhotoChange(path: String) {
+        _uiState.update { it.copy(imageUri = path) }
+    }
+
     fun saveDog() {
         val currentState = _uiState.value
         if (currentState.isFormValid) {
@@ -75,7 +79,8 @@ class AddDogViewModel @Inject constructor(
                         weight = currentState.weight.toInt(),
                         gender = currentState.gender,
                         birthDate = currentState.birthDate,
-                        notes = currentState.notes
+                        notes = currentState.notes,
+                        imageUri = currentState.imageUri
                     )
                     repository.insertDog(dog)
                     _uiState.update { it.copy(isSaved = true) }

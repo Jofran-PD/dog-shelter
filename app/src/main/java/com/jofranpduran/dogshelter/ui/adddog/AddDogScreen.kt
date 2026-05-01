@@ -53,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.jofranpduran.dogshelter.domain.model.Gender
 import com.jofranpduran.dogshelter.ui.theme.DogShelterTheme
 import com.jofranpduran.dogshelter.ui.theme.FemalePink
@@ -92,15 +94,15 @@ fun AddDogScreen(
     }
 
     val context = LocalContext.current
+    var showCamera by remember { mutableStateOf(false) }
 
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // Permission accepted: Navigate to camera or open CameraController
-            Log.i("CAMERA PERMISSION", "GRANTED")
+            showCamera = true
         } else {
-            // Permission denied: Show a toast or a snackbar explaining why it's needed
+            // TODO Show a toast or a snackbar explaining why it's needed
             Log.i("CAMERA PERMISSION", "NOT GRANTED")
         }
     }
@@ -108,17 +110,15 @@ fun AddDogScreen(
     val onAddPhotoClick = remember(context, cameraPermissionLauncher) {
         {
             if (context.hasCameraPermission()) {
-                // Permission is already granted, open camera logic
-                // TODO Open camera logic
-                Log.i("ADD DOG SCREEN", "OPENING CAMERA...")
+                showCamera = true
             } else {
                 // Permission has not been granted, request it
-                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                cameraPermissionLauncher.launch(
+                    Manifest.permission.CAMERA
+                )
             }
-            Unit
         }
     }
-
 
     AddDogContent(
         uiState = uiState,
@@ -133,6 +133,16 @@ fun AddDogScreen(
         onAddPhotoClick = onAddPhotoClick,
         modifier = modifier
     )
+
+    if (showCamera) {
+        CameraCapture(
+            onImageCaptured = { path ->
+                viewModel.onDogPhotoChange(path)
+                showCamera = false
+            },
+            onDismiss = { showCamera = false }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -284,7 +294,7 @@ fun DogPhotoPicker(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .aspectRatio(1f)
+            .aspectRatio(3f / 4f)
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .clickable(onClick = onClick),
@@ -298,7 +308,12 @@ fun DogPhotoPicker(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         } else {
-            // Show image from imageUri
+            AsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = imageUri,
+                contentDescription = "Dog photo",
+                contentScale = ContentScale.Crop
+            )
         }
     }
 }

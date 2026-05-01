@@ -1,14 +1,17 @@
 package com.jofranpduran.dogshelter.ui.dogdetails
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -30,13 +33,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.jofranpduran.dogshelter.domain.model.Dog
 import com.jofranpduran.dogshelter.domain.model.Gender
 import com.jofranpduran.dogshelter.ui.common.rememberDogAgeDisplay
@@ -56,26 +68,34 @@ fun DogDetailsScreen(
         Box(
             modifier = modifier
                 .fillMaxSize()
-                .padding(innerPadding)
         ) {
             when (val state = uiState) {
                 DogDetailsUiState.Loading ->
                     CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .align(Alignment.Center)
                     )
 
                 is DogDetailsUiState.Error ->
                     Text(
-                        modifier = Modifier.align(Alignment.Center),
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .align(Alignment.Center),
                         text = "Error: ${state.message}"
                     )
 
                 is DogDetailsUiState.Success ->
-                    DogDetailsScreenContent(dog = state.dog)
+                    DogDetailsScreenContent(
+                        dog = state.dog,
+                        contentPadding = innerPadding
+                    )
 
                 DogDetailsUiState.NotFound ->
                     Text(
-                        modifier = modifier.align(Alignment.Center),
+                        modifier = modifier
+                            .padding(innerPadding)
+                            .align(Alignment.Center),
                         text = "Dog not found."
                     )
             }
@@ -86,32 +106,87 @@ fun DogDetailsScreen(
 @Composable
 fun DogDetailsScreenContent(
     modifier: Modifier = Modifier,
-    dog: Dog
+    dog: Dog,
+    contentPadding: PaddingValues = PaddingValues()
 ) {
     val ageString = rememberDogAgeDisplay(dog)
+    val configuration = LocalWindowInfo.current
+    val screenWidth = configuration.containerDpSize.width
+    val imageHeight = screenWidth * 4f / 3f
+
+    // InfoCard aspect ratio is 1.5. In a row of 2 with 16dp padding on sides and 16dp between cards:
+    // cardWidth = (screenWidth - 16.dp * 2 - 16.dp) / 2
+    // cardHeight = cardWidth / 1.5
+    val cardWidth = (screenWidth - 48.dp) / 2
+    val cardHeight = cardWidth / 1.5f
+    val halfCardHeight = cardHeight / 2
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
             .verticalScroll(rememberScrollState())
+            .padding(bottom = contentPadding.calculateBottomPadding())
     ) {
-        Text(
-            text = dog.name,
-            style = MaterialTheme.typography.displayLarge,
-            fontWeight = FontWeight.W500
-        )
+        Box(modifier = Modifier.fillMaxWidth()) {
+            DogImage(
+                imageUri = dog.imageUri,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(imageHeight)
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = dog.name,
+                style = MaterialTheme.typography.displayLarge,
+                fontWeight = FontWeight.W500,
+                color = Color.White,
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .fillMaxWidth()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f))
+                        )
+                    )
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = halfCardHeight + 16.dp, top = 32.dp)
+            )
+        }
 
-        DogInfoGrid(dog = dog, ageString = ageString)
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .offset(y = -halfCardHeight)
+        ) {
+            DogInfoGrid(
+                dog = dog,
+                ageString = ageString
+            )
 
-        if (dog.notes.isNotBlank()) {
+            if (dog.notes.isNotBlank()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                NotesCard(notes = dog.notes)
+            }
             Spacer(modifier = Modifier.height(16.dp))
-            NotesCard(notes = dog.notes)
         }
     }
+}
 
+@Composable
+fun DogImage(
+    imageUri: String,
+    modifier: Modifier = Modifier
+) {
+    AsyncImage(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(imageUri)
+            .crossfade(true)
+            .build(),
+        contentDescription = null,
+        modifier = modifier,
+        contentScale = ContentScale.Crop,
+        error = rememberVectorPainter(image = Icons.Default.Pets)
+    )
 }
 
 @Composable
@@ -227,7 +302,7 @@ fun DogDetailsScreenContentPreview() {
         DogDetailsScreenContent(
             dog = Dog(
                 id = 1,
-                name = "Rex",
+                name = "Rex the Faithful Guardian",
                 breed = "German Shepherd",
                 weight = 30,
                 gender = Gender.MALE,
