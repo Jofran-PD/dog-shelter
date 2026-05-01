@@ -3,7 +3,7 @@ package com.jofranpduran.dogshelter.ui.adoptablelist
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jofranpduran.dogshelter.domain.PetsRepository
+import com.jofranpduran.dogshelter.domain.repository.PetsRepository
 import com.jofranpduran.dogshelter.domain.model.Dog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted

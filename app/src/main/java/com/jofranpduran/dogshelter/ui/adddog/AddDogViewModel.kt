@@ -2,7 +2,7 @@ package com.jofranpduran.dogshelter.ui.adddog
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jofranpduran.dogshelter.domain.PetsRepository
+import com.jofranpduran.dogshelter.domain.repository.PetsRepository
 import com.jofranpduran.dogshelter.domain.model.Dog
 import com.jofranpduran.dogshelter.domain.model.Gender
 import dagger.hilt.android.lifecycle.HiltViewModel

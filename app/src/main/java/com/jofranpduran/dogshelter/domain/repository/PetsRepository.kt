@@ -1,4 +1,4 @@
-package com.jofranpduran.dogshelter.domain
+package com.jofranpduran.dogshelter.domain.repository
 
 import com.jofranpduran.dogshelter.domain.model.Dog
 import kotlinx.coroutines.flow.Flow
