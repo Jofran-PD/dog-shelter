@@ -1,10 +1,10 @@
-package com.jofranpduran.dogshelter.data
+package com.jofranpduran.dogshelter.data.repository
 
 import com.jofranpduran.dogshelter.data.local.dao.DogDao
 import com.jofranpduran.dogshelter.data.mapper.asDomainModel
 import com.jofranpduran.dogshelter.data.mapper.toEntity
-import com.jofranpduran.dogshelter.domain.repository.PetsRepository
 import com.jofranpduran.dogshelter.domain.model.Dog
+import com.jofranpduran.dogshelter.domain.repository.PetsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
