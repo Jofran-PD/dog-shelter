@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "304002987287",
+    "project_id": "dog-shelter-project",
+    "storage_bucket": "dog-shelter-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:304002987287:android:d6ec6afd44652b9184b352",
+        "android_client_info": {
+          "package_name": "com.jofranpduran.dogshelter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2AoPOM0u0hsZ5cM1rlO2aEXwZFwYQI48"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
