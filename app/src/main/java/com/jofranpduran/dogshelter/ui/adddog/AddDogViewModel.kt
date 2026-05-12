@@ -2,9 +2,10 @@ package com.jofranpduran.dogshelter.ui.adddog
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jofranpduran.dogshelter.domain.PetsRepository
+import com.jofranpduran.dogshelter.domain.repository.PetsRepository
 import com.jofranpduran.dogshelter.domain.model.Dog
 import com.jofranpduran.dogshelter.domain.model.Gender
+import com.jofranpduran.dogshelter.domain.repository.ImageAnalysisRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +25,7 @@ data class AddDogUiState(
     val imageUri: String = "",
     val isSaving: Boolean = false,
     val isSaved: Boolean = false,
+    val isGettingBreed: Boolean = false,
     val errorMessage: String? = null
 ) {
     val isFormValid: Boolean
@@ -32,7 +34,8 @@ data class AddDogUiState(
 
 @HiltViewModel
 class AddDogViewModel @Inject constructor(
-    private val repository: PetsRepository
+    private val repository: PetsRepository,
+    private val analysisRepository: ImageAnalysisRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddDogUiState())
@@ -64,6 +67,26 @@ class AddDogViewModel @Inject constructor(
 
     fun onDogPhotoChange(path: String) {
         _uiState.update { it.copy(imageUri = path) }
+    }
+
+    fun getBreedWithAI() {
+        val uri = _uiState.value.imageUri
+        if (uri.isBlank()) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isGettingBreed = true) }
+            analysisRepository.getDogBreedFromImage(uri)
+                .onSuccess { breed ->
+                    _uiState.update { it.copy(breed = breed, isGettingBreed = false) }
+                }.onFailure { e ->
+                    _uiState.update {
+                        it.copy(
+                            errorMessage = "Analysis failed: ${e.message}",
+                            isGettingBreed = false
+                        )
+                    }
+                }
+        }
     }
 
     fun saveDog() {

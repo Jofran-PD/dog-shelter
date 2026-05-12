@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
@@ -53,6 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
@@ -62,7 +64,9 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.jofranpduran.dogshelter.R
 import com.jofranpduran.dogshelter.domain.model.Gender
+import com.jofranpduran.dogshelter.ui.common.PrimaryButton
 import com.jofranpduran.dogshelter.ui.theme.DogShelterTheme
 import com.jofranpduran.dogshelter.ui.theme.FemalePink
 import com.jofranpduran.dogshelter.ui.theme.MaleBlue
@@ -131,6 +135,7 @@ fun AddDogScreen(
         onNotesChange = viewModel::onNotesChange,
         onSaveClick = viewModel::saveDog,
         onAddPhotoClick = onAddPhotoClick,
+        onGetBreedWithAI = viewModel::getBreedWithAI,
         modifier = modifier
     )
 
@@ -158,6 +163,7 @@ fun AddDogContent(
     onNotesChange: (String) -> Unit,
     onAddPhotoClick: () -> Unit,
     onSaveClick: () -> Unit,
+    onGetBreedWithAI: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -207,6 +213,17 @@ fun AddDogContent(
                 label = "Breed",
                 value = uiState.breed,
                 onValueChange = onBreedChange
+            )
+
+            Spacer(modifier = Modifier.size(8.dp))
+
+            PrimaryButton(
+                text = "Analyse breed from photo",
+                icon = rememberVectorPainter(Icons.Filled.Pets),
+                onClick = onGetBreedWithAI,
+                enabled = uiState.imageUri.isNotBlank(),
+                loading = uiState.isGettingBreed,
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.size(16.dp))
@@ -489,7 +506,8 @@ fun AddDogScreenPreview() {
             onBirthDateChange = {},
             onNotesChange = {},
             onAddPhotoClick = {},
-            onSaveClick = {}
+            onSaveClick = {},
+            onGetBreedWithAI = {}
         )
     }
 }

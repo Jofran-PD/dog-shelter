@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.jofranpduran.dogshelter.domain.PetsRepository
+import com.jofranpduran.dogshelter.domain.repository.PetsRepository
 import com.jofranpduran.dogshelter.domain.model.Dog
 import com.jofranpduran.dogshelter.ui.DogDetailsRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
