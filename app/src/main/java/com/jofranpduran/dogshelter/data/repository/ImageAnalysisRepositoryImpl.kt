@@ -9,6 +9,10 @@ import com.google.firebase.ai.type.content
 import com.jofranpduran.dogshelter.domain.repository.ImageAnalysisRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
@@ -37,6 +41,27 @@ class ImageAnalysisRepositoryImpl @Inject constructor(
                 Result.failure(e)
             }
         }
+    }
+
+    override fun generateDogNotes(imageUri: String, breed: String): Flow<String> {
+        return flow {
+            val image = loadBitmap(imageUri)
+            val prompt = content {
+                image(image)
+                text(
+                    "Act like an enthusiastic dog shelter volunteer. " +
+                            "Based on the photo and the breed ($breed), " +
+                            "describe this dog's personality, ideal " +
+                            "environment, possible health issues, and diet. " +
+                            "Use a friendly, upbeat tone. " +
+                            "Keep the response under two paragraphs, " +
+                            "with each paragraph being approximately 60 words."
+                )
+            }
+            generativeModel.generateContentStream(prompt).collect { chunk ->
+                emit(chunk)
+            }
+        }.map { it.text ?: "" }.flowOn(Dispatchers.IO)
     }
 
     private fun loadBitmap(uriString: String): Bitmap {

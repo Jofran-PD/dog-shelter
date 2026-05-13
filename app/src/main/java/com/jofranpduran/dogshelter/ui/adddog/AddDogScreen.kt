@@ -54,9 +54,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -136,6 +138,7 @@ fun AddDogScreen(
         onSaveClick = viewModel::saveDog,
         onAddPhotoClick = onAddPhotoClick,
         onGetBreedWithAI = viewModel::getBreedWithAI,
+        onGenerateNotesWithAI = viewModel::generateNotesWithAI,
         modifier = modifier
     )
 
@@ -164,6 +167,7 @@ fun AddDogContent(
     onAddPhotoClick: () -> Unit,
     onSaveClick: () -> Unit,
     onGetBreedWithAI: () -> Unit,
+    onGenerateNotesWithAI: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -218,8 +222,8 @@ fun AddDogContent(
             Spacer(modifier = Modifier.size(8.dp))
 
             PrimaryButton(
-                text = "Analyse breed from photo",
-                icon = rememberVectorPainter(Icons.Filled.Pets),
+                text = "Analyze breed from photo",
+                icon = painterResource(R.drawable.ic_ai_generate),
                 onClick = onGetBreedWithAI,
                 enabled = uiState.imageUri.isNotBlank(),
                 loading = uiState.isGettingBreed,
@@ -258,6 +262,17 @@ fun AddDogContent(
                 onValueChange = onNotesChange,
                 minLines = 3,
                 singleLine = false
+            )
+
+            Spacer(modifier = Modifier.size(8.dp))
+
+            PrimaryButton(
+                text = "Generate notes from photo",
+                icon = painterResource(R.drawable.ic_ai_generate),
+                onClick = onGenerateNotesWithAI,
+                enabled = uiState.imageUri.isNotBlank() && uiState.breed.isNotBlank(),
+                loading = uiState.isGeneratingNotes,
+                modifier = Modifier.fillMaxWidth()
             )
 
             if (uiState.errorMessage != null) {
@@ -507,7 +522,8 @@ fun AddDogScreenPreview() {
             onNotesChange = {},
             onAddPhotoClick = {},
             onSaveClick = {},
-            onGetBreedWithAI = {}
+            onGetBreedWithAI = {},
+            onGenerateNotesWithAI = {}
         )
     }
 }
