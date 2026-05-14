@@ -10,6 +10,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -26,6 +29,7 @@ data class AddDogUiState(
     val isSaving: Boolean = false,
     val isSaved: Boolean = false,
     val isGettingBreed: Boolean = false,
+    val isGeneratingNotes: Boolean = false,
     val errorMessage: String? = null
 ) {
     val isFormValid: Boolean
@@ -85,6 +89,30 @@ class AddDogViewModel @Inject constructor(
                             isGettingBreed = false
                         )
                     }
+                }
+        }
+    }
+
+    fun generateNotesWithAI() {
+        val uri = _uiState.value.imageUri
+        val breed = _uiState.value.breed
+        if (uri.isBlank() || breed.isBlank()) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(notes = "") }
+            analysisRepository.generateDogNotes(uri, breed)
+                .onStart { _uiState.update { it.copy(isGeneratingNotes = true) } }
+                .onCompletion { _uiState.update { it.copy(isGeneratingNotes = false) } }
+                .catch { e ->
+                    _uiState.update {
+                        it.copy(
+                            errorMessage = "Generation failed: ${e.message}",
+                            isGeneratingNotes = false
+                        )
+                    }
+                }
+                .collect { chunk ->
+                    _uiState.update { it.copy(notes = it.notes + chunk) }
                 }
         }
     }
